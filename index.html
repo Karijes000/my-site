@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ObzvonPro</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #0f0f1a;
+      color: #fff;
+    }
+    header {
+      background: #121220;
+      padding: 20px;
+      text-align: center;
+      font-size: 22px;
+    }
+    nav {
+      background: #1a1a2e;
+      padding: 10px;
+      display: flex;
+      justify-content: space-around;
+    }
+    nav button {
+      background: none;
+      border: none;
+      color: #00bfff;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .section {
+      display: none;
+      padding: 20px;
+      max-width: 800px;
+      margin: auto;
+    }
+    .active {
+      display: block;
+    }
+    .card {
+      background: #1a1a2e;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: 12px;
+    }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      background: #2a2a40;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+    }
+    .btn {
+      background: #00bfff;
+      color: #fff;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    .btn:hover {
+      background: #0099cc;
+    }
+  </style>
+</head>
+<body>
+
+<header>Здравствуйте, вы попали на сайт ObzvonPro</header>
+
+<nav>
+  <button onclick="show('register')">Регистрация</button>
+  <button onclick="show('login')">Вход</button>
+  <button onclick="show('shop')">Магазин</button>
+  <button onclick="show('profile')">Профиль</button>
+  <button id="adminNav" onclick="show('admin')" style="display:none;">Админ-Панель</button>
+</nav>
+
+<!-- Регистрация -->
+<div id="register" class="section active">
+  <div class="card">
+    <h3>Регистрация</h3>
+    <input type="text" id="regNick" placeholder="Ник">
+    <input type="email" id="regEmail" placeholder="Email">
+    <input type="password" id="regPass" placeholder="Пароль">
+    <button class="btn">Зарегистрироваться</button>
+  </div>
+</div>
+
+<!-- Вход -->
+<div id="login" class="section">
+  <div class="card">
+    <h3>Вход</h3>
+    <input type="email" placeholder="Email">
+    <input type="password" placeholder="Пароль">
+    <button class="btn">Войти</button>
+  </div>
+</div>
+
+<!-- Магазин -->
+<div id="shop" class="section">
+  <div class="card">
+    <h3>Обзвон на ЛИДЕРА — 500 коинов</h3>
+    <button class="btn">Купить</button>
+  </div>
+  <div class="card">
+    <h3>Обзвон на САППОРТА — 300 коинов</h3>
+    <button class="btn">Купить</button>
+  </div>
+  <div class="card">
+    <h3>Обзвон на АДМИНА — 150 коинов</h3>
+    <button class="btn">Купить</button>
+  </div>
+</div>
+
+<!-- Профиль -->
+<div id="profile" class="section">
+  <div class="card">
+    <h3>Профиль</h3>
+    <p>Ник: Mher</p>
+    <p>ID: <span id="userId">777</span></p>
+    <p>Баланс: 1000 коинов</p>
+  </div>
+</div>
+
+<!-- Админка -->
+<div id="admin" class="section">
+  <div class="card">
+    <h3>Управление пользователями</h3>
+    <input type="text" placeholder="ID пользователя" id="targetId">
+    <select id="adminAction">
+      <option value="mute">Выдать мут (доступ 1-2)</option>
+      <option value="ban">Выдать бан (только 3)</option>
+      <option value="coins">Выдать коины (только 5)</option>
+      <option value="setlevel">Выдать уровень админа (только 777)</option>
+    </select>
+    <input type="number" placeholder="Значение (коины или уровень)" id="value">
+    <button class="btn" onclick="adminAction()">Выполнить</button>
+  </div>
+  <div class="card">
+    <h3>Список пользователей</h3>
+    <ul id="userList">
+      <li>ID: 101 | Ник: Ivan | Уровень: 1</li>
+      <li>ID: 102 | Ник: Alex | Уровень: 3</li>
+      <li>ID: 103 | Ник: Denis | Уровень: 2</li>
+    </ul>
+  </div>
+</div>
+
+<!-- СКРИПТ -->
+<script>
+  const currentUserId = 777;
+  const currentAdminLevel = 5;
+
+  // Показываем админ-панель, если ID 777
+  window.onload = function () {
+    if (currentUserId === 777) {
+      document.getElementById('adminNav').style.display = 'inline-block';
+    }
+  };
+
+  // Переключение разделов
+  function show(id) {
+    const sections = document.querySelectorAll('.section');
+    sections.forEach(section => section.classList.remove('active'));
+
+    const target = document.getElementById(id);
+    if (target) {
+      target.classList.add('active');
+    } else {
+      alert('Раздел не найден: ' + id);
+    }
+  }
+
+  // Действия администратора
+  function adminAction() {
+    const action = document.getElementById('adminAction').value;
+    const value = document.getElementById('value').value;
+    const targetId = document.getElementById('targetId').value;
+
+    if (action === 'ban' && currentAdminLevel < 3) {
+      alert('Недостаточно прав для бана');
+      return;
+    }
+    if (action === 'coins' && currentAdminLevel < 5) {
+      alert('Недостаточно прав для коинов');
+      return;
+    }
+    if (action === 'setlevel' && currentUserId !== 777) {
+      alert('Только ID 777 может выдавать уровни');
+      return;
+    }
+
+    alert(`Действие "${action}" выполнено для пользователя ID ${targetId} со значением ${value}`);
+  }
+</script>
+
+</body>
+</html>
